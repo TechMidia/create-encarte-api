@@ -1,17 +1,15 @@
 {
   "name": "create-encarte-api",
   "version": "1.0.0",
+  "description": "API para gerar encartes promocionais personalizados",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "express": "^4.18.2",
-    "dotenv": "^16.3.1",
-    "sharp": "^0.32.1",
-    "axios": "^1.6.0",
     "cors": "^2.8.5",
-    "body-parser": "^1.20.2"
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "sharp": "^0.33.3"
   }
 }
