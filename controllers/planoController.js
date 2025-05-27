@@ -1,26 +1,25 @@
-const pool = require('../db');
+const express = require('express');
+const router = express.Router();
+const { verificarPlano } = require('../controllers/planoController');
 
-async function verificarPlano(telefone) {
-  const client = await pool.connect();
-  try {
-    const result = await client.query(
-      'SELECT plano FROM usuarios WHERE telefone = $1 AND assinatura = true LIMIT 1',
-      [telefone]
-    );
+router.get('/verificar-plano', async (req, res) => {
+  const telefone = req.query.telefone;
 
-    if (result.rows.length > 0) {
-      return result.rows[0].plano;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error('Erro ao consultar plano:', error.message);
-    throw error;
-  } finally {
-    client.release();
+  if (!telefone) {
+    return res.status(400).json({ erro: 'Telefone é obrigatório' });
   }
-}
 
-module.exports = {
-  verificarPlano,
-};
+  try {
+    const plano = await verificarPlano(telefone);
+    if (plano) {
+      res.json({ ativo: true, plano });
+    } else {
+      res.json({ ativo: false });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ erro: 'Erro ao verificar plano' });
+  }
+});
+
+module.exports = router;
