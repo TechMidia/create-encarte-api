@@ -1,5 +1,6 @@
 const uploadToS3 = require('./uploadS3');
 const path = require('path');
+const imagemRoute = require('./routes/imagem');
 
 app.post('/criar-encarte', async (req, res) => {
   // Lógica para gerar encarte e salvar como `encarte.png`
