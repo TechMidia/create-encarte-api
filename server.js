@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 
 // Rota para buscar imagem de produto
 app.use('/api', imagemRoute);
+app.use('/api', usuarioRoute);
 
 // Rota para criar encarte
 app.post('/criar-encarte', async (req, res) => {
