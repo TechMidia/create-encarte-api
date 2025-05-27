@@ -1,16 +1,15 @@
-// controllers/planoController.js
 const pool = require('../db');
 
 async function verificarPlano(telefone) {
   const client = await pool.connect();
   try {
     const result = await client.query(
-      'SELECT plano FROM usuarios WHERE telefone = $1 AND ativo = true LIMIT 1',
+      'SELECT plano FROM usuarios WHERE telefone = $1 AND assinatura = true LIMIT 1',
       [telefone]
     );
 
     if (result.rows.length > 0) {
-      return result.rows[0].plano; // retorna o nome do plano (1, 2 ou 3)
+      return result.rows[0].plano;
     } else {
       return null;
     }
