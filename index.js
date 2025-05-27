@@ -1,52 +1,57 @@
 require('dotenv').config();
 const express = require('express');
-const path = require('path');
+const cors = require('cors');
 const fs = require('fs');
+const path = require('path');
 const sharp = require('sharp');
+
 const app = express();
+app.use(cors());
+app.use(express.json({ limit: '10mb' }));
 
-app.use(express.json());
-app.use('/static', express.static(path.join(__dirname, 'public')));
+app.get('/', (req, res) => {
+  res.send('API Encarte ativa');
+});
 
+// Rota de geração do encarte
 app.post('/gerar-encarte', async (req, res) => {
   try {
-    const { logo, selo, pessoa, rodape, produtos, fundo } = req.body;
+    const { fundo, logo, selo3d, pessoa, rodape, produtos } = req.body;
 
-    if (!logo || !selo || !pessoa || !rodape || !produtos || !fundo) {
-      return res.status(400).json({ erro: 'Dados incompletos para gerar encarte.' });
+    if (!fundo || !logo || !selo3d || !pessoa || !rodape || !produtos) {
+      return res.status(400).json({ erro: 'Faltam dados para gerar o encarte' });
     }
 
-    const fundoPath = path.join(__dirname, 'public', 'imagens', fundo);
-    let imagemBase = sharp(fundoPath);
+    const base = await sharp(Buffer.from(fundo, 'base64'))
+      .composite([
+        { input: Buffer.from(logo, 'base64'), top: 20, left: 780 },
+        { input: Buffer.from(selo3d, 'base64'), top: 20, left: 20 },
+        { input: Buffer.from(pessoa, 'base64'), top: 20, left: 380 },
+        { input: Buffer.from(rodape, 'base64'), top: 1600, left: 0 }
+      ])
+      .png()
+      .toBuffer();
 
-    const elementos = [
-      { input: path.join(__dirname, 'public', 'imagens', logo), top: 30, left: 850 },
-      { input: path.join(__dirname, 'public', 'imagens', selo), top: 30, left: 50 },
-      { input: path.join(__dirname, 'public', 'imagens', pessoa), top: 30, left: 450 },
-      { input: path.join(__dirname, 'public', 'imagens', rodape), top: 1660, left: 0 }
-    ];
+    const nomeArquivo = `encarte-${Date.now()}.png`;
+    const caminho = path.join(__dirname, 'encartes', nomeArquivo);
 
-    produtos.forEach((produto, index) => {
-      elementos.push({
-        input: path.join(__dirname, 'public', 'produtos', produto.imagem),
-        top: produto.top,
-        left: produto.left
-      });
+    fs.mkdirSync(path.dirname(caminho), { recursive: true });
+    fs.writeFileSync(caminho, base);
+
+    res.json({
+      mensagem: 'Encarte gerado com sucesso!',
+      caminho: `/encartes/${nomeArquivo}`
     });
 
-    const composicao = await imagemBase
-      .composite(elementos)
-      .toFile(path.join(__dirname, 'public', 'resultado', 'encarte-final.png'));
-
-    res.json({ mensagem: 'Encarte gerado com sucesso.', imagem: '/static/resultado/encarte-final.png' });
-
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ erro: 'Erro ao gerar encarte.' });
+  } catch (erro) {
+    console.error(erro);
+    res.status(500).json({ erro: 'Erro ao gerar o encarte', detalhe: erro.message });
   }
 });
 
+app.use('/encartes', express.static(path.join(__dirname, 'encartes')));
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`API de encarte rodando na porta ${PORT}`);
+  console.log(`✅ API rodando na porta ${PORT}`);
 });
