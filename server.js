@@ -7,6 +7,8 @@ const imagemRoute = require('./routes/imagem');
 const pool = require('./db'); // Certifique-se de que esse arquivo existe e exporta a conexão PostgreSQL
 const planoRoute = require('./routes/plano');
 app.use('/plano', planoRoute);
+const usuarioRoute = require('./routes/usuario');
+app.use('/api', usuarioRoute);
 
 dotenv.config();
 
