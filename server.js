@@ -4,31 +4,31 @@ const dotenv = require('dotenv');
 const path = require('path');
 const uploadToS3 = require('./uploadS3');
 const imagemRoute = require('./routes/imagem');
-const pool = require('./db'); // Certifique-se de que esse arquivo existe e exporta a conexão PostgreSQL
 const planoRoute = require('./routes/plano');
-app.use('/plano', planoRoute);
 const usuarioRoute = require('./routes/usuario');
-app.use('/api', usuarioRoute);
+const pool = require('./db');
 
 dotenv.config();
 
-const app = express();
+const app = express(); // <-- TEM QUE SER ANTES DOS app.use()
+
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+
+// Rotas
+app.use('/plano', planoRoute);
+app.use('/api', imagemRoute);
+app.use('/api', usuarioRoute);
 
 // Rota de teste
 app.get('/', (req, res) => {
   res.send('API do Encarte está rodando com sucesso!');
 });
 
-// Rota para buscar imagem de produto
-app.use('/api', imagemRoute);
-app.use('/api', usuarioRoute);
-
 // Rota para criar encarte
-app.post('/criar-encarte', async (req, res) => {
+app.post('/api/criar-encarte', async (req, res) => {  // <-- Ajustado com /api
   const imagePath = path.join(__dirname, 'encarte.png');
 
   try {
