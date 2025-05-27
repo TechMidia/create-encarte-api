@@ -5,6 +5,8 @@ const path = require('path');
 const uploadToS3 = require('./uploadS3');
 const imagemRoute = require('./routes/imagem');
 const pool = require('./db'); // Certifique-se de que esse arquivo existe e exporta a conexão PostgreSQL
+const planoRoute = require('./routes/plano');
+app.use('/api', planoRoute);
 
 dotenv.config();
 
