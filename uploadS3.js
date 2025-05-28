@@ -15,7 +15,7 @@ async function uploadToS3(filePath, fileName) {
     Key: `encartes/${fileName}`,
     Body: fileContent,
     ContentType: 'image/png',
-    ACL: 'public-read',
+    // ACL removido pois o bucket não permite
   };
 
   const data = await s3.upload(params).promise();
