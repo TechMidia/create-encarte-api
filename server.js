@@ -47,6 +47,8 @@ app.post('/criar-encarte', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao criar encarte', detalhe: err.message });
   }
 });
+const planoRoute = require('./routes/plano');
+app.use('/plano', planoRoute);
 
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
