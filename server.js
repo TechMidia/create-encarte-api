@@ -10,7 +10,7 @@ const pool = require('./db'); // conexão com PostgreSQL
 
 dotenv.config();
 
-const app = express(); // <-- precisa estar aqui antes dos .use()
+const app = express();
 
 const port = process.env.PORT || 3000;
 
@@ -47,8 +47,6 @@ app.post('/criar-encarte', async (req, res) => {
     res.status(500).json({ erro: 'Erro ao criar encarte', detalhe: err.message });
   }
 });
-const planoRoute = require('./routes/plano');
-app.use('/plano', planoRoute);
 
 app.listen(port, () => {
   console.log(`Servidor rodando na porta ${port}`);
